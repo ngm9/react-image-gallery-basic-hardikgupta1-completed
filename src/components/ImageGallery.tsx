@@ -1,39 +1,51 @@
-import React, { useEffect } from 'react';
-import useGalleryImages from '../hooks/useGalleryImages';
-import GalleryGrid from './GalleryGrid';
-import Modal from './Modal';
+import React, {memo,useState } from 'react';
+import type {ImageData} from '../types/index.ts'
 
-const API_URL = '/api/images'; // Not a real endpoint; see useGalleryImages for mock
 
-const ImageGallery: React.FC = () => {
-  const {
-    images,
-    loading,
-    error,
-    selectedIndex,
-    setSelectedIndex,
-    fetchImages
-  } = useGalleryImages();
+interface ImageGalleryProps {
+  image: ImageData;
+  onClick:(image:ImageData)=>void
+}
 
-  useEffect(() => {
-    fetchImages(API_URL);
-  }, [fetchImages]);
+const ImageItem: React.FC<ImageGalleryProps> = memo(({image,onClick}) => {
+
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  }
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoaded(true); // To stop showing loader
+  }
+
+
+  const handleClick = () => {
+    onClick(image);
+  }
 
   return (
-    <div>
-      {loading && <div>Loading images...</div>}
-      {error && <div style={{ color: 'red' }}>Failed to load images: {error}</div>}
-      {!loading && !error && images && (
-        <GalleryGrid images={images} onImageClick={setSelectedIndex} />
-      )}
-      {selectedIndex !== null && images && (
-        <Modal
-          image={images[selectedIndex]}
-          onClose={() => setSelectedIndex(null)}
-        />
-      )}
+    <div className="image-item" onClick={handleClick}>
+      <div className="image-wrapper">
+        {!imageLoaded && !imageError && <div className="image-placeholder">Loading...</div>}
+        {imageError ? (
+          <div className="image-error">Failed to load</div>
+        ) : (
+          <img
+            src={image.thumbnailUrl}
+            alt={image.title}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            style={{ display: imageLoaded ? 'block' : 'none' }}
+          />
+        )}
+      </div>
+      <img src={image.thumbnailUrl} alt={image.title} />
     </div>
-  );
-};
 
-export default ImageGallery;
+ 
+  );
+});
+
+export default ImageItem;
