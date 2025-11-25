@@ -1,0 +1,25 @@
+.gallery-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  padding: 24px;
+}
+
+.gallery-item {
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.gallery-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+.gallery-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
